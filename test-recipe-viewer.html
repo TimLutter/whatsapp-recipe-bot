@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FamFood Recipe Viewer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* FamFood Brand Colors */
+        :root {
+            --famfood-background: #030424;
+            --famfood-basil: #3d8202;
+            --famfood-white: #ffffff;
+            --famfood-orange: #c65d01;
+            --famfood-dark-overlay: rgba(3, 4, 36, 0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: var(--famfood-background);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--famfood-white);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(61, 130, 2, 0.1) 0%, rgba(3, 4, 36, 0.95) 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 2px solid rgba(61, 130, 2, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--famfood-basil) 0%, #2d6001 100%);
+            color: var(--famfood-white);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .logo {
+            position: absolute;
+            top: 15px;
+            right: 30px;
+            height: 40px;
+            width: auto;
+        }
+
+        .header h1 {
+            font-family: 'Bree Serif', serif;
+            font-size: 42px;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .teaser {
+            font-family: 'Manrope', sans-serif;
+            font-size: 18px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .image-container {
+            width: 100%;
+            height: 450px;
+            background: rgba(61, 130, 2, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 4px solid var(--famfood-basil);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: linear-gradient(to top, var(--famfood-background), transparent);
+        }
+
+        .image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 35px;
+        }
+
+        .tag {
+            background: var(--famfood-basil);
+            color: var(--famfood-white);
+            padding: 10px 18px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(61, 130, 2, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .tag:hover {
+            transform: translateY(-2px);
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section h2 {
+            font-family: 'Bree Serif', serif;
+            color: var(--famfood-white);
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--famfood-basil);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ingredients li, .steps li {
+            margin-bottom: 12px;
+            line-height: 1.8;
+            padding-left: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .ingredients li::marker, .steps li::marker {
+            color: var(--famfood-basil);
+            font-weight: bold;
+        }
+
+        .nutrition {
+            background: rgba(61, 130, 2, 0.15);
+            padding: 25px;
+            border-radius: 16px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
+            border: 2px solid rgba(61, 130, 2, 0.3);
+        }
+
+        .nutrition div {
+            text-align: center;
+        }
+
+        .nutrition .label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .nutrition .value {
+            font-family: 'Bree Serif', serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--famfood-basil);
+            margin-top: 5px;
+        }
+
+        .links {
+            background: rgba(61, 130, 2, 0.1);
+            padding: 25px;
+            border-radius: 16px;
+            margin-top: 25px;
+            border: 2px solid rgba(61, 130, 2, 0.3);
+        }
+
+        .links strong {
+            font-family: 'Bree Serif', serif;
+            color: var(--famfood-basil);
+            font-size: 18px;
+        }
+
+        .links a {
+            display: inline-block;
+            color: var(--famfood-white);
+            background: var(--famfood-orange);
+            text-decoration: none;
+            margin: 10px 10px 0 0;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(198, 93, 1, 0.4);
+        }
+
+        .links a:hover {
+            background: #e07101;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(198, 93, 1, 0.6);
+        }
+
+        .loader {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: var(--famfood-white);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loader" class="loader">Loading recipe...</div>
+        <div id="content" style="display:none;"></div>
+    </div>
+
+    <script>
+        // Get slug from URL parameter or use default
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get('slug') || 'airfryer-quick-rezept-3034eae9';
+
+        // Fetch recipe from local API
+        fetch(`http://localhost:8080/recipes/${slug}`)
+            .then(res => res.json())
+            .then(data => {
+                const { recipe, media } = data;
+
+                // Build WhatsApp message
+                const whatsappText = `${recipe.teaser}\n\n${recipe.tags.join(' ')}\n\n📖 Vollständiges Rezept: https://rezepte.famfood.app/${recipe.slug}`;
+
+                // Build nutrition HTML
+                let nutritionHTML = '';
+                if (recipe.nutritionalInfo) {
+                    const ni = recipe.nutritionalInfo;
+                    nutritionHTML = `
+                        <div class="section">
+                            <h2>📊 Nährwerte</h2>
+                            <div class="nutrition">
+                                ${ni.calories ? `<div><div class="label">Kalorien</div><div class="value">${ni.calories} kcal</div></div>` : ''}
+                                ${ni.protein ? `<div><div class="label">Protein</div><div class="value">${ni.protein}g</div></div>` : ''}
+                                ${ni.carbs ? `<div><div class="label">Kohlenhydrate</div><div class="value">${ni.carbs}g</div></div>` : ''}
+                                ${ni.fat ? `<div><div class="label">Fett</div><div class="value">${ni.fat}g</div></div>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const html = `
+                    <div class="header">
+                        <img src="famfood-logo.png" alt="FamFood" class="logo">
+                        <h1>${recipe.title}</h1>
+                        <p class="teaser">${recipe.teaser}</p>
+                    </div>
+
+                    ${media.image ? `
+                    <div class="image-container">
+                        <img src="${media.image}" alt="${recipe.title}">
+                    </div>
+                    ` : ''}
+
+                    <div class="content">
+                        <div class="tags">
+                            ${recipe.tags.slice(0, 8).map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+
+                        <div class="section">
+                            <h2>🥘 Zutaten</h2>
+                            <ul class="ingredients">
+                                ${recipe.ingredients.map(ing => `
+                                    <li>${ing.amount} ${ing.unit} ${ing.name}</li>
+                                `).join('')}
+                            </ul>
+                        </div>
+
+                        <div class="section">
+                            <h2>👨‍🍳 Zubereitung</h2>
+                            <ol class="steps">
+                                ${recipe.steps.map(step => `
+                                    <li>${step.instruction} ${step.duration ? `<em>(${step.duration} Min.)</em>` : ''}</li>
+                                `).join('')}
+                            </ol>
+                        </div>
+
+                        ${nutritionHTML}
+
+                        <div class="links">
+                            <strong>📎 Attachments:</strong><br><br>
+                            ${media.image ? `<a href="${media.image}" target="_blank">🖼️ View Recipe Image</a>` : ''}
+                            ${media.pdf ? `<a href="${media.pdf}" target="_blank">📄 Download PDF Recipe Card</a>` : ''}
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('content').innerHTML = html;
+                document.getElementById('content').style.display = 'block';
+            })
+            .catch(error => {
+                document.getElementById('loader').innerHTML = `
+                    <div style="color: red;">
+                        ❌ Error loading recipe<br>
+                        <small>${error.message}</small><br><br>
+                        Make sure the API server is running:<br>
+                        <code>npx tsx apps/api/src/index.ts</code>
+                    </div>
+                `;
+            });
+    </script>
+</body>
+</html>

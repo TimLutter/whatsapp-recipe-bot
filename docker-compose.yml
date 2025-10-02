@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # API service
+  api:
+    build: .
+    container_name: recipe-bot-api
+    command: node apps/api/dist/index.js
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - TZ=${TZ:-Europe/Berlin}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - API_PORT=8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Pipeline service (for scheduled recipe generation)
+  pipeline:
+    build: .
+    container_name: recipe-bot-pipeline
+    command: node apps/pipeline/dist/index.js
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - TZ=${TZ:-Europe/Berlin}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - TEXT_AI_PROVIDER=${TEXT_AI_PROVIDER:-stub}
+      - IMAGE_AI_PROVIDER=${IMAGE_AI_PROVIDER:-stub}
+      - PDF_ENGINE=${PDF_ENGINE:-puppeteer}
+      - RECIPE_BASE_URL=${RECIPE_BASE_URL:-https://rezepte.famfood.app}
+    restart: unless-stopped
+
+  # Poster service (WhatsApp automation)
+  poster:
+    build: .
+    container_name: recipe-bot-poster
+    command: node apps/poster/dist/index.js
+    environment:
+      - NODE_ENV=${NODE_ENV:-production}
+      - TZ=${TZ:-Europe/Berlin}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - PLAYWRIGHT_HEADLESS=${PLAYWRIGHT_HEADLESS:-true}
+      - PLAYWRIGHT_USER_DATA_DIR=/data/wa_user
+      - WA_CHANNEL_SELECTOR_STRATEGY=${WA_CHANNEL_SELECTOR_STRATEGY:-aria}
+      - POST_MIN_GAP_MINUTES=${POST_MIN_GAP_MINUTES:-45}
+      - POST_MAX_PER_DAY=${POST_MAX_PER_DAY:-6}
+      - HUMANIZE_TYPO_RATE=${HUMANIZE_TYPO_RATE:-0.02}
+      - HUMANIZE_MIN_DELAY_MS=${HUMANIZE_MIN_DELAY_MS:-800}
+      - HUMANIZE_MAX_DELAY_MS=${HUMANIZE_MAX_DELAY_MS:-3500}
+      - SAFE_MODE=${SAFE_MODE:-false}
+      - RECIPE_BASE_URL=${RECIPE_BASE_URL:-https://rezepte.famfood.app}
+    volumes:
+      - wa_data:/data/wa_user
+    restart: unless-stopped
+    # For QR login, you may need to temporarily set:
+    # environment:
+    #   - PLAYWRIGHT_HEADLESS=false
+    # and use X11 forwarding or VNC
+
+volumes:
+  wa_data:
+    driver: local

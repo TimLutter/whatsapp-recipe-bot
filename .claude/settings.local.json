@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/usr/local/bin/pnpm install)",
+      "Bash(npx pnpm build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

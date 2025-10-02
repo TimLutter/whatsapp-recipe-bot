@@ -1,0 +1,22 @@
+{
+  "name": "@whatsapp-recipe-bot/generation",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@whatsapp-recipe-bot/core": "workspace:*",
+    "openai": "^5.23.2",
+    "puppeteer": "^21.6.1",
+    "qrcode": "^1.5.3"
+  },
+  "devDependencies": {
+    "@types/qrcode": "^1.5.5",
+    "typescript": "^5.3.3"
+  }
+}
