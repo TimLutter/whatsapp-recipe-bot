@@ -117,9 +117,19 @@ https://rezepte.famfood.app/health
 
 ## Troubleshooting
 
+### Build Timeout
+**Problem:** Build times out während `pnpm install` oder beim Bauen der Packages.
+
+**Lösung:** Das Projekt nutzt `nixpacks.toml` um:
+- Puppeteer Installation zu überspringen (wird nicht für API benötigt)
+- Build-Prozess zu optimieren
+
+Die Datei `nixpacks.toml` ist bereits konfiguriert mit `PUPPETEER_SKIP_DOWNLOAD=true`.
+
 ### Build Failed
 - Überprüfe Environment Variables in Railway
 - Schaue Railway Logs: `Deployments` → Latest → `View Logs`
+- Falls Timeout: Railway erkennt `nixpacks.toml` automatisch
 
 ### 404 on Routes
 - Überprüfe dass Express Static Files korrekt gemountet sind
