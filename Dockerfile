@@ -29,10 +29,10 @@ COPY apps/api ./apps/api
 COPY tsconfig.json ./
 
 # Build only required packages for API
-RUN pnpm --filter @whatsapp-recipe/core build && \
-    pnpm --filter @whatsapp-recipe/supabase build && \
-    pnpm --filter @whatsapp-recipe/generation build && \
-    pnpm --filter @whatsapp-recipe/api build
+RUN pnpm --filter @whatsapp-recipe-bot/core build && \
+    pnpm --filter @whatsapp-recipe-bot/supabase build && \
+    pnpm --filter @whatsapp-recipe-bot/generation build && \
+    pnpm --filter @whatsapp-recipe-bot/api build
 
 # Production stage
 FROM node:20-alpine
