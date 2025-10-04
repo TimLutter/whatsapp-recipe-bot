@@ -1,5 +1,6 @@
 [phases.setup]
 nixPkgs = ["nodejs_20", "pnpm"]
+aptPkgs = []
 
 [phases.install]
 cmds = [
@@ -17,3 +18,4 @@ cmd = "node apps/api/dist/index.js"
 [variables]
 NODE_ENV = "production"
 PUPPETEER_SKIP_DOWNLOAD = "true"
+PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = "true"
