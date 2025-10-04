@@ -1,30 +1,5 @@
-FROM node:20-bullseye-slim
-
-# Install Playwright dependencies
-RUN apt-get update && apt-get install -y \
-    wget \
-    ca-certificates \
-    fonts-liberation \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libnspr4 \
-    libnss3 \
-    libx11-xcb1 \
-    libxcb-dri3-0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxrandr2 \
-    libxss1 \
-    libxtst6 \
-    xdg-utils \
-    && rm -rf /var/lib/apt/lists/*
+# Multi-stage build for production API deployment
+FROM node:20-alpine AS builder
 
 # Install pnpm
 RUN npm install -g pnpm@8.15.0
@@ -35,28 +10,47 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml* ./
 COPY packages/core/package.json ./packages/core/
 COPY packages/supabase/package.json ./packages/supabase/
-COPY packages/whatsapp/package.json ./packages/whatsapp/
 COPY packages/generation/package.json ./packages/generation/
 COPY apps/api/package.json ./apps/api/
-COPY apps/pipeline/package.json ./apps/pipeline/
-COPY apps/poster/package.json ./apps/poster/
+
+# Skip Puppeteer/Playwright installation
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
-COPY . .
+# Copy source code (only needed packages for API)
+COPY packages/core ./packages/core
+COPY packages/supabase ./packages/supabase
+COPY packages/generation ./packages/generation
+COPY apps/api ./apps/api
+COPY tsconfig.json ./
 
-# Build all packages and apps
-RUN pnpm build
+# Build only required packages for API
+RUN pnpm --filter @whatsapp-recipe/core build && \
+    pnpm --filter @whatsapp-recipe/supabase build && \
+    pnpm --filter @whatsapp-recipe/generation build && \
+    pnpm --filter @whatsapp-recipe/api build
 
-# Install Playwright browsers (only Chromium)
-RUN npx playwright install chromium
+# Production stage
+FROM node:20-alpine
 
-# Create data directory for WhatsApp session
-RUN mkdir -p /data/wa_user
+WORKDIR /app
+
+# Copy built artifacts and dependencies
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/packages/core/dist ./packages/core/dist
+COPY --from=builder /app/packages/supabase/dist ./packages/supabase/dist
+COPY --from=builder /app/packages/generation/dist ./packages/generation/dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+
+# Copy public files for static serving
+COPY public ./public
 
 EXPOSE 8080
 
-# Default to API service, can be overridden
+# Start API server
 CMD ["node", "apps/api/dist/index.js"]
