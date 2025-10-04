@@ -39,13 +39,27 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy built artifacts and dependencies
+# Install pnpm
+RUN npm install -g pnpm@8.15.0
+
+# Copy package files for production install
+COPY --from=builder /app/package.json /app/pnpm-workspace.yaml /app/pnpm-lock.yaml ./
+COPY --from=builder /app/packages/core/package.json ./packages/core/
+COPY --from=builder /app/packages/supabase/package.json ./packages/supabase/
+COPY --from=builder /app/packages/generation/package.json ./packages/generation/
+COPY --from=builder /app/apps/api/package.json ./apps/api/
+
+# Install production dependencies only
+ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+RUN pnpm install --prod --frozen-lockfile
+
+# Copy built artifacts
 COPY --from=builder /app/apps/api/dist ./apps/api/dist
 COPY --from=builder /app/packages/core/dist ./packages/core/dist
 COPY --from=builder /app/packages/supabase/dist ./packages/supabase/dist
 COPY --from=builder /app/packages/generation/dist ./packages/generation/dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
 
 # Copy public files for static serving
 COPY public ./public
