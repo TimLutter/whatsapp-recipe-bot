@@ -1,7 +1,7 @@
-import { Router } from 'express';
+import { Router, type IRouter } from 'express';
 import { getSupabase } from '@whatsapp-recipe-bot/supabase';
 
-export const healthRouter = Router();
+export const healthRouter: IRouter = Router();
 
 healthRouter.get('/', async (req, res) => {
   try {

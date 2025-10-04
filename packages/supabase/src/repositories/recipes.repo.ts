@@ -5,7 +5,7 @@ export class RecipesRepository {
   async create(recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>): Promise<Recipe> {
     const supabase = getSupabase();
 
-    const { data, error } = await supabase
+    const { data, error} = await supabase
       .from('recipes')
       .insert({
         slug: recipe.slug,
@@ -18,6 +18,10 @@ export class RecipesRepository {
         tags: recipe.tags,
         lang: recipe.lang,
         nutritional_info: recipe.nutritionalInfo as any,
+        cooking_time: recipe.cookingTime,
+        difficulty: recipe.difficulty,
+        allergens: recipe.allergens || [],
+        fun_fact: recipe.funFact,
       })
       .select()
       .single();
@@ -112,6 +116,10 @@ export class RecipesRepository {
       tags: row.tags,
       lang: row.lang,
       nutritionalInfo: row.nutritional_info as NutritionalInfo | undefined,
+      cookingTime: row.cooking_time,
+      difficulty: row.difficulty,
+      allergens: row.allergens || [],
+      funFact: row.fun_fact,
       createdAt: new Date(row.created_at),
       updatedAt: new Date(row.updated_at),
     };

@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(/usr/local/bin/pnpm install)",
-      "Bash(npx pnpm build:*)"
+      "Bash(npx pnpm build:*)",
+      "Read(//Users/timlutter/Desktop/**)",
+      "Bash(npx tsx:*)",
+      "Bash(curl:*)",
+      "Bash(npx tsc:*)",
+      "Read(//var/folders/bb/y057tby50dq490pzstn6jytc0000gn/T/TemporaryItems/NSIRD_screencaptureui_swX0Qb/**)",
+      "Read(//var/folders/bb/y057tby50dq490pzstn6jytc0000gn/T/TemporaryItems/NSIRD_screencaptureui_pQcSOx/**)"
     ],
     "deny": [],
     "ask": []

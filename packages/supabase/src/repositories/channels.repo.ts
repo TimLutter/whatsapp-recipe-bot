@@ -44,10 +44,28 @@ export class ChannelsRepository {
     return this.mapRowToChannel(data);
   }
 
+  async findBySlug(slug: string): Promise<Channel | null> {
+    const supabase = getSupabase();
+
+    const { data, error } = await supabase
+      .from('channels')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      throw error;
+    }
+
+    return this.mapRowToChannel(data);
+  }
+
   private mapRowToChannel(row: any): Channel {
     return {
       id: row.id,
       name: row.name,
+      slug: row.slug,
       platform: row.platform,
       waSelector: row.wa_selector,
       frequency: row.frequency,

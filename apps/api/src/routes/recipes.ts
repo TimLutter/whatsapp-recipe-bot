@@ -1,9 +1,9 @@
-import { Router } from 'express';
+import { Router, type IRouter } from 'express';
 import { RecipesRepository, MediaRepository } from '@whatsapp-recipe-bot/supabase';
 import { createLogger } from '@whatsapp-recipe-bot/core';
 
 const logger = createLogger({ module: 'recipes-api' });
-export const recipesRouter = Router();
+export const recipesRouter: IRouter = Router();
 
 const recipesRepo = new RecipesRepository();
 const mediaRepo = new MediaRepository();
@@ -38,6 +38,10 @@ recipesRouter.get('/:slug', async (req, res, next) => {
         diet: recipe.diet,
         tags: recipe.tags,
         nutritionalInfo: recipe.nutritionalInfo,
+        cookingTime: recipe.cookingTime,
+        difficulty: recipe.difficulty,
+        allergens: recipe.allergens,
+        funFact: recipe.funFact,
       },
       media: {
         image: imageMedia?.publicUrl,

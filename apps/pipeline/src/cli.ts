@@ -135,4 +135,65 @@ program
     }
   });
 
+program
+  .command('create')
+  .description('Create a recipe from a title or URL')
+  .argument('<input>', 'Recipe title or URL')
+  .option('-d, --device <device>', 'Cooking device', 'stovetop')
+  .option('--diet <diet...>', 'Diet types', ['balanced'])
+  .option('--category <category...>', 'Recipe categories', ['quick'])
+  .action(async (input, options) => {
+    try {
+      const config = initializeAndGetConfig();
+      const processor = new InspirationProcessor(config);
+      const repo = new InspirationsRepository();
+
+      // Determine if input is a URL or title
+      const isUrl = input.startsWith('http://') || input.startsWith('https://');
+      const title = isUrl ? new URL(input).hostname.split('.')[0] : input;
+
+      console.log(`\n🔨 Creating recipe from ${isUrl ? 'URL' : 'title'}: ${input}\n`);
+
+      // Create inspiration
+      const inspiration = await repo.create({
+        title,
+        referenceUrl: isUrl ? input : undefined,
+        device: options.device,
+        diet: options.diet,
+        category: options.category,
+        lang: 'de',
+      });
+
+      console.log(`✅ Inspiration created: ${inspiration.id}\n`);
+
+      // Process immediately
+      await processor.processInspiration(inspiration.id);
+
+      // Get the generated recipe
+      const updatedInspiration = await repo.findById(inspiration.id);
+
+      if (updatedInspiration?.generatedRecipeId) {
+        const recipesRepo = await import('@whatsapp-recipe-bot/supabase').then(m => new m.RecipesRepository());
+        const recipe = await recipesRepo.findById(updatedInspiration.generatedRecipeId);
+
+        if (recipe) {
+          console.log('\n✨ Recipe created successfully!\n');
+          console.log(`📖 Title: ${recipe.title}`);
+          console.log(`🔗 Slug: ${recipe.slug}`);
+          console.log(`\n🌐 HTML Preview:`);
+          console.log(`   file:///Users/timlutter/Desktop/Projects/whatsapp-recipe-channel/test-recipe-viewer.html?slug=${recipe.slug}`);
+          console.log(`\n🌍 Public URL:`);
+          console.log(`   ${config.recipeBaseUrl}/${recipe.slug}`);
+          console.log('');
+        }
+      }
+
+      process.exit(0);
+    } catch (error) {
+      logger.error('Error creating recipe', { error });
+      console.error('\n❌ Failed to create recipe:', error instanceof Error ? error.message : String(error));
+      process.exit(1);
+    }
+  });
+
 program.parse();

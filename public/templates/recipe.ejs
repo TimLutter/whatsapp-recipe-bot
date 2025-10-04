@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= recipe.title %> | <%= channel.name %> | FamFood</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="<%= recipe.teaser %>">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<%= recipe.title %> | FamFood Rezepte">
+    <meta property="og:description" content="<%= recipe.teaser %>">
+    <meta property="og:image" content="<%= media.image %>">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= recipe.title %>">
+    <meta name="twitter:description" content="<%= recipe.teaser %>">
+    <meta name="twitter:image" content="<%= media.image %>">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --famfood-basil: #3D8202;
+            --famfood-white: #F5F5DC;
+        }
+
+        .famfood-gradient {
+            background: linear-gradient(135deg, #3D8202 0%, #5BAF26 100%);
+        }
+
+        .hero-image {
+            height: 40vh;
+            min-height: 280px;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        @media (min-width: 768px) {
+            .hero-image {
+                height: 50vh;
+                max-height: 500px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Hero Image -->
+    <div class="relative">
+        <img src="<%= media.image %>" alt="<%= recipe.title %>" class="w-full hero-image">
+        <div class="absolute top-4 left-4 bg-white rounded-full px-4 py-2 shadow-lg">
+            <span class="text-sm font-semibold text-gray-700"><%= channel.name %></span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+        <!-- Title Card -->
+        <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3"><%= recipe.title %></h1>
+            <p class="text-lg text-gray-600 leading-relaxed"><%= recipe.teaser %></p>
+        </div>
+
+        <!-- Info Badges -->
+        <div class="flex flex-wrap gap-3 mb-6">
+            <% if (recipe.cookingTime) { %>
+            <div class="bg-white rounded-full px-4 py-2 shadow-md flex items-center gap-2">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-sm font-semibold text-gray-700"><%= recipe.cookingTime %> Min</span>
+            </div>
+            <% } %>
+
+            <% if (recipe.difficulty) { %>
+            <div class="bg-white rounded-full px-4 py-2 shadow-md flex items-center gap-2">
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                <span class="text-sm font-semibold text-gray-700">
+                    <% if (recipe.difficulty === 'easy') { %>Einfach<% } %>
+                    <% if (recipe.difficulty === 'medium') { %>Mittel<% } %>
+                    <% if (recipe.difficulty === 'hard') { %>Schwer<% } %>
+                </span>
+            </div>
+            <% } %>
+
+            <!-- Portions Badge (with +/-) -->
+            <div class="bg-green-50 border-2 border-green-500 rounded-full px-4 py-2 shadow-md flex items-center gap-2">
+                <button onclick="adjustPortions(-1)" id="portions-minus" class="w-6 h-6 flex items-center justify-center bg-green-600 text-white rounded-full text-lg font-bold hover:bg-green-700 transition">−</button>
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                <span id="portions-value" class="text-sm font-bold text-green-700">4</span>
+                <span class="text-sm font-semibold text-green-700">Portionen</span>
+                <button onclick="adjustPortions(1)" id="portions-plus" class="w-6 h-6 flex items-center justify-center bg-green-600 text-white rounded-full text-lg font-bold hover:bg-green-700 transition">+</button>
+            </div>
+        </div>
+
+        <!-- CTA: Save to FamFood App -->
+        <div class="bg-gradient-to-r from-green-600 to-green-500 rounded-2xl shadow-2xl p-6 mb-6 text-white">
+            <div class="flex items-center justify-between">
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold mb-2">📥 In FamFood App speichern</h3>
+                    <p class="text-sm text-green-50">Speichere dieses Rezept direkt in deiner FamFood App!</p>
+                </div>
+                <button onclick="openInApp()" class="bg-white text-green-600 px-6 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition transform hover:scale-105">
+                    Öffnen
+                </button>
+            </div>
+        </div>
+
+        <!-- Fun Fact -->
+        <% if (recipe.funFact) { %>
+        <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6 mb-6 relative">
+            <div class="absolute -top-2 left-4 text-6xl text-green-500 opacity-20 font-serif">"</div>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">💡 Wusstest du?</h3>
+            <p class="text-gray-700 leading-relaxed"><%= recipe.funFact %></p>
+        </div>
+        <% } %>
+
+        <!-- Ingredients -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">🥘 Zutaten</h2>
+            <ul id="ingredients-list" class="space-y-3">
+                <% recipe.ingredients.forEach((ing, index) => { %>
+                <li data-index="<%= index %>" data-original-amount="<%= ing.amount %>" class="flex items-start gap-3">
+                    <span class="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-xs font-bold mt-0.5">✓</span>
+                    <span class="text-gray-800">
+                        <span class="ingredient-amount font-semibold text-green-600"><%= ing.amount %></span>
+                        <%= ing.unit %> <%= ing.name %>
+                    </span>
+                </li>
+                <% }); %>
+            </ul>
+        </div>
+
+        <!-- Steps -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">👨‍🍳 Zubereitung</h2>
+            <div class="space-y-6">
+                <% recipe.steps.forEach((step, index) => { %>
+                <div class="flex gap-4">
+                    <div class="flex-shrink-0 w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        <%= step.number %>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-gray-800 leading-relaxed"><%= step.instruction %></p>
+                        <% if (step.duration) { %>
+                        <span class="inline-block mt-2 text-sm text-gray-500">⏱ <%= step.duration %> Min</span>
+                        <% } %>
+                    </div>
+                </div>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Nutritional Info -->
+        <% if (recipe.nutritionalInfo) { %>
+        <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">📊 Nährwerte (pro Portion)</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <% if (recipe.nutritionalInfo.calories) { %>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600"><%= recipe.nutritionalInfo.calories %></div>
+                    <div class="text-xs text-gray-600 mt-1">Kalorien</div>
+                </div>
+                <% } %>
+                <% if (recipe.nutritionalInfo.protein) { %>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600"><%= recipe.nutritionalInfo.protein %>g</div>
+                    <div class="text-xs text-gray-600 mt-1">Protein</div>
+                </div>
+                <% } %>
+                <% if (recipe.nutritionalInfo.carbs) { %>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600"><%= recipe.nutritionalInfo.carbs %>g</div>
+                    <div class="text-xs text-gray-600 mt-1">Kohlenhydrate</div>
+                </div>
+                <% } %>
+                <% if (recipe.nutritionalInfo.fat) { %>
+                <div class="text-center p-3 bg-gray-50 rounded-lg">
+                    <div class="text-2xl font-bold text-green-600"><%= recipe.nutritionalInfo.fat %>g</div>
+                    <div class="text-xs text-gray-600 mt-1">Fett</div>
+                </div>
+                <% } %>
+            </div>
+        </div>
+        <% } %>
+
+        <!-- Allergens -->
+        <% if (recipe.allergens && recipe.allergens.length > 0) { %>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-2">⚠️ Allergene</h3>
+            <p class="text-gray-700">Dieses Rezept enthält: <strong><%= recipe.allergens.join(', ') %></strong></p>
+        </div>
+        <% } %>
+
+        <!-- PDF Download -->
+        <% if (media.pdf) { %>
+        <a href="<%= media.pdf %>" target="_blank" class="block bg-white border-2 border-gray-200 rounded-2xl p-6 mb-6 hover:shadow-lg transition">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">📄 Als PDF speichern</h3>
+                    <p class="text-sm text-gray-600 mt-1">Lade das Rezept als PDF herunter</p>
+                </div>
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </div>
+        </a>
+        <% } %>
+
+        <!-- Tags -->
+        <% if (recipe.tags && recipe.tags.length > 0) { %>
+        <div class="flex flex-wrap gap-2 mb-8">
+            <% recipe.tags.forEach(tag => { %>
+            <span class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">#<%= tag %></span>
+            <% }); %>
+        </div>
+        <% } %>
+
+        <!-- Footer -->
+        <div class="text-center py-8 text-gray-500 text-sm">
+            <p>Powered by <strong class="text-green-600">FamFood</strong></p>
+        </div>
+    </div>
+
+    <!-- Deep Link Handler -->
+    <script src="/js/deeplink.js"></script>
+
+    <!-- Portions Adjustment Script -->
+    <script>
+        let currentPortions = 4;
+        const defaultPortions = 4;
+
+        function adjustPortions(change) {
+            const newPortions = currentPortions + change;
+
+            if (newPortions < 1 || newPortions > 20) return;
+
+            currentPortions = newPortions;
+            document.getElementById('portions-value').textContent = currentPortions;
+
+            const scaleFactor = currentPortions / defaultPortions;
+
+            const ingredientItems = document.querySelectorAll('#ingredients-list li');
+            ingredientItems.forEach(item => {
+                const originalAmount = parseFloat(item.dataset.originalAmount);
+                const amountSpan = item.querySelector('.ingredient-amount');
+
+                if (amountSpan && !isNaN(originalAmount)) {
+                    const newAmount = originalAmount * scaleFactor;
+                    const roundedAmount = Math.round(newAmount * 10) / 10;
+                    amountSpan.textContent = roundedAmount;
+                }
+            });
+
+            document.getElementById('portions-minus').disabled = currentPortions <= 1;
+            document.getElementById('portions-plus').disabled = currentPortions >= 20;
+        }
+    </script>
+</body>
+</html>

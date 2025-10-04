@@ -26,6 +26,7 @@ export function generateHashtags(
     'vegan': '#Vegan',
     'vegetarian': '#Vegetarisch',
     'paleo': '#Paleo',
+    'balanced': '#Ausgewogen',
   };
   diets.forEach((diet) => tags.push(dietMap[diet]));
 

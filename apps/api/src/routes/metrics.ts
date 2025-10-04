@@ -1,6 +1,6 @@
-import { Router } from 'express';
+import { Router, type IRouter } from 'express';
 
-export const metricsRouter = Router();
+export const metricsRouter: IRouter = Router();
 
 // Simple Prometheus-style metrics endpoint
 // In production, use a proper metrics library like prom-client

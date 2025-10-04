@@ -1,7 +1,8 @@
 export type Device = 'airfryer' | 'thermomix' | 'microwave' | 'oven' | 'stovetop';
-export type Diet = 'high-protein' | 'low-carb' | 'keto' | 'vegan' | 'vegetarian' | 'paleo';
+export type Diet = 'high-protein' | 'low-carb' | 'keto' | 'vegan' | 'vegetarian' | 'paleo' | 'balanced';
 export type Category = '5-ingredients' | 'one-pot' | 'sheet-pan' | 'quick' | 'meal-prep';
 export type RecipeStatus = 'DRAFT' | 'READY' | 'POSTED' | 'FAILED';
+export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export interface RecipeIngredient {
   amount: string;
@@ -35,6 +36,10 @@ export interface Recipe {
   tags: string[];
   lang: string;
   nutritionalInfo?: NutritionalInfo;
+  cookingTime?: number; // Total time in minutes
+  difficulty?: Difficulty;
+  allergens?: string[]; // List of allergens (e.g., "Gluten", "Milch", "Eier")
+  funFact?: string; // Fun fact about the recipe's origin, history, or interesting context
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,4 +62,8 @@ export interface RecipeGenerationOutput {
   steps: RecipeStep[];
   tags: string[];
   nutritionalInfo?: NutritionalInfo;
+  cookingTime?: number;
+  difficulty?: Difficulty;
+  allergens?: string[];
+  funFact?: string;
 }

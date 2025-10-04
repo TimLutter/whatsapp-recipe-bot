@@ -67,6 +67,10 @@ export class RecipeGenerator {
       tags: hashtags,
       lang: input.lang,
       nutritionalInfo: generatedContent.nutritionalInfo,
+      cookingTime: generatedContent.cookingTime,
+      difficulty: generatedContent.difficulty,
+      allergens: generatedContent.allergens,
+      funFact: generatedContent.funFact,
     });
 
     logger.info('Recipe created', { recipeId: recipe.id, slug });

@@ -1,0 +1,12 @@
+node_modules/
+.git/
+.env.local
+.env.development
+*.log
+*.md
+docs/
+scripts/
+test-*.html
+data/
+playwright-state/
+.wa-session/

@@ -37,12 +37,20 @@ export class OpenAITextGenerator extends BaseTextGenerator {
     }
 
     const parsed = JSON.parse(content);
+    console.log('   🔍 Debug - funFact from AI:', parsed.funFact);
 
     // Enforce title length limit
     let title = parsed.title;
     if (title.length > 40) {
       console.log(`   ⚠️  Title too long (${title.length} chars), truncating...`);
       title = title.substring(0, 37) + '...';
+    }
+
+    // Enforce funFact length limit
+    let funFact = parsed.funFact;
+    if (funFact && funFact.length > 800) {
+      console.log(`   ⚠️  FunFact too long (${funFact.length} chars), truncating...`);
+      funFact = funFact.substring(0, 797) + '...';
     }
 
     console.log(`   ✅ Recipe generated: ${title}`);
@@ -54,6 +62,10 @@ export class OpenAITextGenerator extends BaseTextGenerator {
       steps: parsed.steps,
       tags: parsed.tags || [],
       nutritionalInfo: parsed.nutritionalInfo,
+      cookingTime: parsed.cookingTime,
+      difficulty: parsed.difficulty,
+      allergens: parsed.allergens || [],
+      funFact: funFact,
     };
   }
 
@@ -80,6 +92,10 @@ Kategorie: ${category}`;
 {
   "title": "Kurzer Rezept-Titel (MAX 40 Zeichen!)",
   "teaser": "Ein kurzer, appetitanregender Text (1-2 Sätze)",
+  "cookingTime": 30,  // Gesamte Zubereitungszeit in Minuten
+  "difficulty": "easy",  // "easy", "medium" oder "hard"
+  "allergens": ["Gluten", "Milch"],  // Liste der Allergene (z.B. "Gluten", "Milch", "Eier", "Nüsse", "Soja", "Fisch", "Schalentiere", "Sellerie", "Senf", "Sesam", "Lupinen", "Sulfite")
+  "funFact": "Ein interessanter, informativer Text über das Gericht (3-4 Sätze, MAXIMAL 800 Zeichen!). Bitte folgende Aspekte abdecken: 1) Ursprungsland/Region und ungefähres Alter des Gerichts, 2) Wie es heute verwendet/gegessen wird, 3) Gibt es internationale Variationen oder haben andere Länder/Kontinente eigene Versionen entwickelt? 4) Eine interessante Besonderheit oder Tradition. WICHTIG: Schreibe natürlich und direkt - vermeide Formulierungen wie 'Ein spannender Fun Fact ist' oder 'Interessanterweise' - sage die Fakten einfach direkt!",
   "ingredients": [
     {
       "name": "Zutat",
@@ -108,6 +124,9 @@ Wichtig:
 - Realistische Mengenangaben
 - 4-8 Zutaten
 - 3-5 Zubereitungsschritte
+- cookingTime = Gesamtzeit (Vorbereitung + Kochen)
+- difficulty basiert auf Schwierigkeit der Zubereitung
+- allergens = Liste aller Allergene im Rezept (leere Liste wenn keine)
 - Tags beschreiben das Rezept (z.B. "Schnell", "Einfach", "Gesund", "${theme}")
 - Nährwerte pro Portion
 - Der Titel MUSS kurz und prägnant sein (MAXIMAL 40 Zeichen!)

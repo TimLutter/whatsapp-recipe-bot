@@ -9,6 +9,7 @@ export type { TextGeneratorProvider } from './text/factory.js';
 export { ImageGenerator, BaseImageGenerator } from './image/base.js';
 export { StubImageGenerator } from './image/stub.generator.js';
 export { OpenAIImageGenerator } from './image/openai.generator.js';
+export { GeminiImageGenerator } from './image/gemini.generator.js';
 export { createImageGenerator } from './image/factory.js';
 export type { ImageGeneratorProvider } from './image/factory.js';
 
